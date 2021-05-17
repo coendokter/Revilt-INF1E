@@ -17,9 +17,11 @@ import org.jetbrains.annotations.Nullable;
 public final class MainActivity extends AppCompatActivity {
     private HashMap _$_findViewCache;
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        // Make sure this is before calling super.onCreate
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
-        this.setContentView(-1300009);
     }
 
     public View _$_findCachedViewById(int var1) {
@@ -40,6 +42,6 @@ public final class MainActivity extends AppCompatActivity {
         if (this._$_findViewCache != null) {
             this._$_findViewCache.clear();
         }
-
     }
 }
+
