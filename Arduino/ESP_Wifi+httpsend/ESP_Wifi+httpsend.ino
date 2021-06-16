@@ -5,16 +5,20 @@
 #include "ESPAsyncWiFiManager.h"
 #include "HTTPClient.h"
 #include "EEPROM.h"
+#include "HX711.h"
 #define EEPROM_SIZE 1
+#define DOUT  A0
+#define CLK  A1
 
 AsyncWebServer server(80);
 DNSServer dns;
 
-int analogePinDrukSensor = 0;
 int drukWaarde = 0; 
 String Server = "https://revilt.serverict.nl/ReviltApi/api/Send_ESP_Data.php?Vilt_id=1&Gewicht_glas=";
 String Uri = "&user=geert&pass=geert";
 const char* ViltName = "Revilt69";
+HX711 scale;
+float calibration_factor = 10000000;
 
 void setup() {
   Serial.begin(115200);                     // initiate Serial monitor
@@ -40,14 +44,20 @@ void setup() {
     Serial.print(EEPROM.read(0));          // prints the byte on the serial monitor
   }
   wifiManager.setConfigPortalTimeout(120);
+
+  scale.begin(DOUT, CLK);
+  scale.set_scale();
+  scale.tare();
+  long zero_factor = scale.read_average(); 
 }
  
 void loop() {
+  scale.set_scale(calibration_factor);
   if(WiFi.status() == WL_CONNECTED){      // Checks if the ESP is connected to a WiFi Network
     HTTPClient http;                      // Connects to a http Client
-    drukWaarde = analogRead(analogePinDrukSensor);
+    drukWaarde = scale.get_units();
 
-    String ServerFinal = Server + drukwaarde + Uri; // Puts the api-address, values from the sensor, and the passwords in one string
+    String ServerFinal = Server + drukWaarde + Uri; // Puts the api-address, values from the sensor, and the passwords in one string
     http.begin(ServerFinal.c_str());          
     int httpResponseCode = http.GET();              // Sends the information in the ServerFinal string to the API
     Serial.print("HTTP Response code: ");
