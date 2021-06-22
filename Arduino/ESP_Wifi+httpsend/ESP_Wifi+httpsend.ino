@@ -18,8 +18,8 @@ int drukWaarde = 0;
 String Server = "https://revilt.serverict.nl/ReviltApi/api/Send_ESP_Data.php?Vilt_id=1&Gewicht_glas=";
 String Uri = "&user=geert&pass=geert";
 const char* ViltName = "Revilt69";
-const int LOADCELL_DOUT_PIN = A0;
-const int LOADCELL_SCK_PIN = A1;
+const int LOADCELL_DOUT_PIN = 2;
+const int LOADCELL_SCK_PIN = 3;
 
 
 void setup() {
@@ -62,8 +62,8 @@ void loop() {
     Serial.print("HTTP Response code: ");
     Serial.println(httpResponseCode);               // Returns the http code received from the API
     Serial.println(drukWaarde);
-    http.end();
-    scale.power_down();	                                     // Ends the connection with the http client
+    http.end();                                              // Ends the connection with the http client
+    scale.power_down();
     delay(2000);
     scale.power_up();
   }
