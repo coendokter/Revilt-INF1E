@@ -18,8 +18,10 @@ int drukWaarde;
 String Server = "https://revilt.serverict.nl/ReviltApi/api/Send_ESP_Data.php";
 String Uri = "?user=geert&pass=geert&Vilt_id=1&Gewicht_glas=";
 const char* ViltName = "Revilt69";
-const int LOADCELL_DOUT_PIN = 26;
-const int LOADCELL_SCK_PIN = 25;
+const int LOADCELL_DOUT_PIN = 25;
+const int LOADCELL_SCK_PIN = 26;
+boolean isSetup;
+int calibration = 0;
 
 void setup() {
   Serial.begin(115200);                     // initiate Serial monitor
@@ -47,6 +49,8 @@ void setup() {
     Serial.print(EEPROM.read(0));          // prints the byte on the serial monitor
   } 
    scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+   scale.tare();
+   isSetup = false;
 }
  
 void loop() {
@@ -56,7 +60,16 @@ void loop() {
        if (scale.is_ready()) {
     long reading = scale.read();
     Serial.print("HX711 reading: ");
-    drukWaarde = reading;
+    if(isSetup == false)
+    {
+      calibration = reading;
+      isSetup = true;
+    }
+    else
+    {
+      drukWaarde = reading;
+    }
+    
   } else {
     Serial.println("HX711 not found.");
   }
